@@ -179,6 +179,12 @@ function love.update(dt)
         else
             ball.dx = -math.random(140, 200)
         end
+		-- if both players are AI, then no need to wait for key press
+		-- move to the next state
+		if behavior1 == 'computer' and behavior2 == 'computer' then
+			gameState = 'play'
+		end
+		
     elseif gameState == 'play' then
         -- detect ball collision with paddles, reversing dx if true and
         -- slightly increasing it, then altering the dy based on the position
