@@ -271,7 +271,7 @@ function love.update(dt)
 		--only happens if reflex time is not over.
 		if timeToReflex1 <= 0 then
 			-- add random time to reflex
-			timeToReflex1 = math.random()/7
+			timeToReflex1 = math.random()/10
 			if ball.y < player1.y then
 			-- ball y is over paddle, move up!
 				player1.dy = -PADDLE_SPEED
