@@ -122,6 +122,11 @@ function love.load()
 	-- 2. 'computer' (controled by AI)
 	behavior1 = 'human'
 	behavior2 = 'human'
+	
+	-- in case the player is a computer one, it needs to have a reflex time
+	-- which will be the random amount of time it will take to "see" the ball
+	timeToReflex1 = 0.000
+	timeToReflex2 = 0.000
 
     -- the state of our game; can be any of the following:
     -- 1. 'start' (the beginning of the game, before first serve)
@@ -150,6 +155,14 @@ end
     across system hardware.
 ]]
 function love.update(dt)
+	-- decrease reflex time in computer players, so that they "see" the ball
+	if behavior1 == 'computer' then
+		timeToReflex1 = timeToReflex1 - dt
+	end
+	if behavior2 == 'computer' then
+		timeToReflex2 = timeToReflex2 - dt
+	end
+	
     if gameState == 'serve' then
         -- before switching to play, initialize ball's velocity based
         -- on player who last scored
@@ -254,28 +267,33 @@ function love.update(dt)
 		end
 		
     -- otherwise, it is controlled by AI
-	else		 
-		if ball.y < player1.y then
-		-- ball y is over paddle, move up!
-			player1.dy = -PADDLE_SPEED
-				
-		elseif ball.y > player1.y + player1.height then
-		-- ball y is under paddle, move down! 
-			player1.dy = PADDLE_SPEED
-		
-		else
-		-- ball y is under control, adjust to center of the paddle
-			if ball.y > player1.y + player1.height * (2/3) then
-			-- ball is closer to paddle's lower edge
-				player1.dy = PADDLE_SPEED
-			else if ball.y < player1.y + player1.height * (1/3) then
-			-- ball is closer to paddle's upper edge			
+	else
+		--only happens if reflex time is not over.
+		if timeToReflex1 <= 0 then
+			-- add random time to reflex
+			timeToReflex1 = math.random()/7
+			if ball.y < player1.y then
+			-- ball y is over paddle, move up!
 				player1.dy = -PADDLE_SPEED
+					
+			elseif ball.y > player1.y + player1.height then
+			-- ball y is under paddle, move down! 
+				player1.dy = PADDLE_SPEED
+			
 			else
-				player1.dy = 0
+			-- ball y is under control, adjust to center of the paddle
+				if ball.y > player1.y + player1.height * (2/3) then
+				-- ball is closer to paddle's lower edge
+					player1.dy = PADDLE_SPEED
+				else if ball.y < player1.y + player1.height * (1/3) then
+				-- ball is closer to paddle's upper edge			
+					player1.dy = -PADDLE_SPEED
+				else
+					player1.dy = 0
+				end
+				end -- I HAVE NO IDEA WHY THIS SECOND END IS NECESSARY. IT DOESN'T WORK WITHOUT IT.
 			end
-			end -- I HAVE NO IDEA WHY THIS SECOND END IS NECESSARY. IT DOESN'T WORK WITHOUT IT.
-		end
+		end		
 	end
 
     -- in case player 2's behavior is human, speed controlled by keyboard
@@ -290,26 +308,31 @@ function love.update(dt)
 	
 		-- otherwise, it is controlled by AI
 	else
-		if ball.y < player2.y then
-		-- ball y is over paddle, move up!
-			player2.dy = -PADDLE_SPEED
-				
-		elseif ball.y > player2.y + player2.height then
-		-- ball y is under paddle, move down! 
-			player2.dy = PADDLE_SPEED
-		
-		else
-		-- ball y is under control, adjust to center of the paddle
-			if ball.y > player2.y + player2.height * (2/3) then
-			-- ball is closer to paddle's lower edge
-				player2.dy = PADDLE_SPEED
-			else if ball.y < player2.y + player2.height * (1/3) then
-			-- ball is closer to paddle's upper edge			
+	--only happens if reflex time is not over.
+		if timeToReflex2 <= 0 then
+			-- add random time to reflex
+			timeToReflex2 = math.random()/10
+			if ball.y < player2.y then
+			-- ball y is over paddle, move up!
 				player2.dy = -PADDLE_SPEED
+					
+			elseif ball.y > player2.y + player2.height then
+			-- ball y is under paddle, move down! 
+				player2.dy = PADDLE_SPEED
+			
 			else
-				player2.dy = 0
+			-- ball y is under control, adjust to center of the paddle
+				if ball.y > player2.y + player2.height * (2/3) then
+				-- ball is closer to paddle's lower edge
+					player2.dy = PADDLE_SPEED
+				else if ball.y < player2.y + player2.height * (1/3) then
+				-- ball is closer to paddle's upper edge			
+					player2.dy = -PADDLE_SPEED
+				else
+					player2.dy = 0
+				end
+				end -- I HAVE NO IDEA WHY THIS SECOND END IS NECESSARY. IT DOESN'T WORK WITHOUT IT.
 			end
-			end -- I HAVE NO IDEA WHY THIS SECOND END IS NECESSARY. IT DOESN'T WORK WITHOUT IT.
 		end
 	end
 	
