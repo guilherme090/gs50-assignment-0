@@ -116,6 +116,12 @@ function love.load()
     -- player who won the game; not set to a proper value until we reach
     -- that state in the game
     winningPlayer = 0
+	
+	-- behavior for players 1 and 2:
+	-- 1. 'human' (controled by keyboard)
+	-- 2. 'computer' (controled by AI)
+	behavior1 = 'human'
+	behavior2 = 'human'
 
     -- the state of our game; can be any of the following:
     -- 1. 'start' (the beginning of the game, before first serve)
@@ -275,6 +281,19 @@ function love.keypressed(key)
     if key == 'escape' then
         -- the function LÖVE2D uses to quit the application
         love.event.quit()
+		
+	-- if we press A or D, or left or right arrow in the start phase,
+	-- player behavior must be changed.
+	
+	elseif key == 'a' and gameState == 'start' then
+		behavior1 = 'human'
+	elseif key == 'd' and gameState == 'start' then	
+		behavior1 = 'computer'
+	elseif key == 'left' and gameState == 'start' then
+		behavior2 = 'human'
+	elseif key == 'right' and gameState == 'start' then	
+		behavior2 = 'computer' 
+	
     -- if we press enter during either the start or serve phase, it should
     -- transition to the next appropriate state
     elseif key == 'enter' or key == 'return' then
@@ -318,7 +337,16 @@ function love.draw()
         -- UI messages
         love.graphics.setFont(smallFont)
         love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('Choose players behavior with A and D (PLAYER 1)'  .. 
+		'/ left and right arrow (PLAYER 2)', 0, VIRTUAL_HEIGHT/3 - 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
+		-- print player 1 and 2 behavior on the screen 
+		love.graphics.setFont(largeFont)
+		love.graphics.printf('PLAYER 1:\n' .. tostring(behavior1), 0, 
+			VIRTUAL_HEIGHT / 3, VIRTUAL_WIDTH/2, 'center')
+		love.graphics.printf('PLAYER 2:\n' .. tostring(behavior2), VIRTUAL_WIDTH/2, 
+			VIRTUAL_HEIGHT / 3, VIRTUAL_WIDTH/2, 'center')
+		
     elseif gameState == 'serve' then
         -- UI messages
         love.graphics.setFont(smallFont)
