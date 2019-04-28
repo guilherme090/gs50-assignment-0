@@ -242,24 +242,77 @@ function love.update(dt)
     --
     -- paddles can move no matter what state we're in
     --
-    -- player 1
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
-    else
-        player1.dy = 0
-    end
+	
+	-- in case player 1's behavior is human, speed controlled by keyboard
+	if behavior1 == 'human' then
+		if love.keyboard.isDown('w') then
+			player1.dy = -PADDLE_SPEED
+		elseif love.keyboard.isDown('s') then
+			player1.dy = PADDLE_SPEED
+		else
+			player1.dy = 0
+		end
+		
+    -- otherwise, it is controlled by AI
+	else		 
+		if ball.y < player1.y then
+		-- ball y is over paddle, move up!
+			player1.dy = -PADDLE_SPEED
+				
+		elseif ball.y > player1.y + player1.height then
+		-- ball y is under paddle, move down! 
+			player1.dy = PADDLE_SPEED
+		
+		else
+		-- ball y is under control, adjust to center of the paddle
+			if ball.y > player1.y + player1.height * (2/3) then
+			-- ball is closer to paddle's lower edge
+				player1.dy = PADDLE_SPEED
+			else if ball.y < player1.y + player1.height * (1/3) then
+			-- ball is closer to paddle's upper edge			
+				player1.dy = -PADDLE_SPEED
+			else
+				player1.dy = 0
+			end
+			end -- I HAVE NO IDEA WHY THIS SECOND END IS NECESSARY. IT DOESN'T WORK WITHOUT IT.
+		end
+	end
 
-    -- player 2
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
-    else
-        player2.dy = 0
-    end
-
+    -- in case player 2's behavior is human, speed controlled by keyboard
+	if behavior2 == 'human' then
+		if love.keyboard.isDown('up') and behavior2 == 'human' then
+			player2.dy = -PADDLE_SPEED
+		elseif love.keyboard.isDown('down') and behavior2 == 'human' then
+			player2.dy = PADDLE_SPEED
+		else
+			player2.dy = 0
+		end
+	
+		-- otherwise, it is controlled by AI
+	else
+		if ball.y < player2.y then
+		-- ball y is over paddle, move up!
+			player2.dy = -PADDLE_SPEED
+				
+		elseif ball.y > player2.y + player2.height then
+		-- ball y is under paddle, move down! 
+			player2.dy = PADDLE_SPEED
+		
+		else
+		-- ball y is under control, adjust to center of the paddle
+			if ball.y > player2.y + player2.height * (2/3) then
+			-- ball is closer to paddle's lower edge
+				player2.dy = PADDLE_SPEED
+			else if ball.y < player2.y + player2.height * (1/3) then
+			-- ball is closer to paddle's upper edge			
+				player2.dy = -PADDLE_SPEED
+			else
+				player2.dy = 0
+			end
+			end -- I HAVE NO IDEA WHY THIS SECOND END IS NECESSARY. IT DOESN'T WORK WITHOUT IT.
+		end
+	end
+	
     -- update our ball based on its DX and DY only if we're in play state;
     -- scale the velocity by dt so movement is framerate-independent
     if gameState == 'play' then
