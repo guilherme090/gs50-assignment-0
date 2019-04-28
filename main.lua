@@ -83,9 +83,11 @@ function love.load()
     -- set up our sound effects; later, we can just index this table and
     -- call each entry's `play` method
     sounds = {
-        ['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
-        ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
-        ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static')
+        ['paddle_hit'] = love.audio.newSource('sounds/mine/Paddlehit.wav', 'static'),
+        ['score'] = love.audio.newSource('sounds/mine/Hurt.wav', 'static'),
+        ['wall_hit'] = love.audio.newSource('sounds/mine/Wallhit.wav', 'static'),
+		['select'] = love.audio.newSource('sounds/mine/Select.wav', 'static'),
+		['game_over'] = love.audio.newSource('sounds/mine/Gameover.wav', 'static')
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -161,6 +163,11 @@ function love.update(dt)
 	end
 	if behavior2 == 'computer' then
 		timeToReflex2 = timeToReflex2 - dt
+	end
+	
+	-- if game is over, play victory sound
+	if gameState == 'done' then
+		sounds['game_over']:play() -- is played until a new game starts
 	end
 	
     if gameState == 'serve' then
@@ -362,13 +369,25 @@ function love.keypressed(key)
 	-- player behavior must be changed.
 	
 	elseif key == 'a' and gameState == 'start' then
-		behavior1 = 'human'
-	elseif key == 'd' and gameState == 'start' then	
-		behavior1 = 'computer'
+		if behavior1 == 'computer' then -- if it changes, then play sound 
+			sounds['select']:play()
+			behavior1 = 'human'
+		end
+	elseif key == 'd' and gameState == 'start' then
+		if behavior1 == 'human' then -- if it changes, then play sound
+			sounds['select']:play()
+			behavior1 = 'computer'
+		end		
 	elseif key == 'left' and gameState == 'start' then
-		behavior2 = 'human'
+		if behavior2 == 'computer' then -- if it changes, then play sound
+			sounds['select']:play()
+			behavior2 = 'human'
+		end				
 	elseif key == 'right' and gameState == 'start' then	
-		behavior2 = 'computer' 
+		if behavior2 == 'human' then -- if it changes, then play sound
+			sounds['select']:play()
+			behavior2 = 'computer'
+		end
 	
     -- if we press enter during either the start or serve phase, it should
     -- transition to the next appropriate state
